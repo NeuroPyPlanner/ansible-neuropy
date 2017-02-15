@@ -1,8 +1,20 @@
 ---
-- hosts: remote-wsgi
+- hosts: us-east-2
   remote_user: ubuntu
   vars_files:
     - external_vars.yml
+  env:
+    SECRET_KEY='{{secret_key }}'
+    DATABASE_NAME={{ database_name }}
+    DATABASE_USER={{ database_user }}
+    DATABASE_PASSWORD={{database_password }}
+    DATABASE_HOST={{ database_host }}
+    DATABASE_PORT={{ database_port }}
+    AWS_HOST={{ aws_host }}
+    AWS_HOST_IP={{ aws_host_ip }}
+    EMAIL_PASSWORD={{ email_password }}
+    GOOGLE_CLIENT_ID='{{ google_client_id }}'
+    GOOGLE_CLIENT_SECRET='{{ google_client_secret }}'
   tasks:
     - name: Update Ubuntu with all the lastest stuff
       apt: update_cache=yes
@@ -43,26 +55,18 @@
     - name: Create a virtual environment in the {{ app_name }} app repo
       command: python3 -m venv {{ environment_location }}
 
-    - name: Add environment variables to activate file
-      shell: echo "export {{ item }}" >> {{ environment_location }}/bin/activate
-      with_items:
-        - SECRET_KEY='{{secret_key }}'
-        - DATABASE_NAME={{ database_name }}
-        - DATABASE_USER={{ database_user }}
-        - DATABASE_PASSWORD={{database_password }}
-        - DATABASE_HOST={{ database_host }}
-        - DATABASE_PORT={{ database_port }}
-        - AWS_HOST={{ aws_host }}
-        - AWS_HOST_IP={{ aws_host_ip }}
-        - EMAIL_PASSWORD={{ email_password }}
-        - GOOGLE_CLIENT_ID='{{ google_client_id }}'
-        - GOOGLE_CLIENT_SECRET='{{ google_client_secret }}'
-
     - name: Install gunicorn to the virtualenv
       pip: virtualenv={{ environment_location }} name=gunicorn
 
     - name: Install the packages specified in requirements.pip in the Python 3 environment
       pip: virtualenv={{ environment_location }} requirements={{ app_root }}/requirements.pip
+
+    - name: Migrate Django models to database
+      django_manage:
+        command: migrate
+        app_path: "{{ app_root }}"/"{{ app_name }}"
+        virtualenv: "{{ environment_location }}"
+      environment: "{{ env }}"
 
     - name: Register the old default file
       stat: path=/etc/nginx/sites-available/default.old
