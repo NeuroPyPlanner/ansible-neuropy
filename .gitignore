@@ -89,3 +89,4 @@ ENV/
 .ropeproject
 
 external_vars.yml
+*.retry

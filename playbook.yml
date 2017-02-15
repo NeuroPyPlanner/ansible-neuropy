@@ -3,18 +3,19 @@
   remote_user: ubuntu
   vars_files:
     - external_vars.yml
-  env:
-    SECRET_KEY='{{secret_key }}'
-    DATABASE_NAME={{ database_name }}
-    DATABASE_USER={{ database_user }}
-    DATABASE_PASSWORD={{database_password }}
-    DATABASE_HOST={{ database_host }}
-    DATABASE_PORT={{ database_port }}
-    AWS_HOST={{ aws_host }}
-    AWS_HOST_IP={{ aws_host_ip }}
-    EMAIL_PASSWORD={{ email_password }}
-    GOOGLE_CLIENT_ID='{{ google_client_id }}'
-    GOOGLE_CLIENT_SECRET='{{ google_client_secret }}'
+  vars:
+    env:
+      SECRET_KEY: '{{secret_key }}'
+      DATABASE_NAME: '{{ database_name }}'
+      DATABASE_USER: "{{ database_user }}"
+      DATABASE_PASSWORD: "{{database_password }}"
+      DATABASE_HOST: "{{ database_host }}"
+      DATABASE_PORT: "{{ database_port }}"
+      AWS_HOST: "{{ aws_host }}"
+      AWS_HOST_IP: "{{ aws_host_ip }}"
+      EMAIL_PASSWORD: "{{ email_password }}"
+      GOOGLE_CLIENT_ID: "{{ google_client_id }}"
+      GOOGLE_CLIENT_SECRET: "{{ google_client_secret }}"
   tasks:
     - name: Update Ubuntu with all the lastest stuff
       apt: update_cache=yes
@@ -64,7 +65,7 @@
     - name: Migrate Django models to database
       django_manage:
         command: migrate
-        app_path: "{{ app_root }}"/"{{ app_name }}"
+        app_path: "/home/ubuntu/NeuroPy/neuropy/"
         virtualenv: "{{ environment_location }}"
       environment: "{{ env }}"
 

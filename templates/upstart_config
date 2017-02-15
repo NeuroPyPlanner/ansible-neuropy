@@ -6,7 +6,7 @@ stop on runlevel [016]
 respawn
 setuid nobody
 setgid nogroup
-chdir {{ app_root }}/neuropy
+chdir {{ app_root }}/{{ lowecase_app_name }}
 
 env SECRET_KEY='{{ secret_key }}'
 env DATABASE_NAME='{{ database_name }}'
@@ -20,4 +20,4 @@ env EMAIL_PASSWORD='{{ email_password }}'
 env GOOGLE_CLIENT_ID='{{ google_client_id }}'
 env GOOGLE_CLIENT_SECRET='{{ google_client_secret }}'
 
-exec {{ environment_location }}/bin/gunicorn -b :8000 imagersite.wsgi:application
+exec {{ environment_location }}/bin/gunicorn -b :8000 {{ lowecase_app_name }}.wsgi:application
