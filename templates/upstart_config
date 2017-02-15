@@ -1,0 +1,23 @@
+description "{{ app_name }}"
+
+start on (filesystem)
+stop on runlevel [016]
+
+respawn
+setuid nobody
+setgid nogroup
+chdir {{ app_root }}/neuropy
+
+env SECRET_KEY='{{ secret_key }}'
+env DATABASE_NAME='{{ database_name }}'
+env DATABASE_USER='{{ database_user }}'
+env DATABASE_PASSWORD='{{ database_password }}'
+env DATABASE_HOST='{{ database_host }}'
+env DATABASE_PORT='{{ database_port }}'
+env AWS_HOST='{{ aws_host }}'
+env AWS_HOST_IP='{{ aws_host_ip }}'
+env EMAIL_PASSWORD='{{ email_password }}'
+env GOOGLE_CLIENT_ID='{{ google_client_id }}'
+env GOOGLE_CLIENT_SECRET='{{ google_client_secret }}'
+
+exec {{ environment_location }}/bin/gunicorn -b :8000 imagersite.wsgi:application
